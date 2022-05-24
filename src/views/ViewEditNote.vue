@@ -1,0 +1,42 @@
+<template>
+  <div class="edit-note">
+    <AddEditNote
+      v-model="noteContent"
+      bgColor="link"
+      placeholder="Edit note"
+      label="Edit Note"
+      ref="addEditNoteRef"
+    >
+      <template #buttons>
+        <button @click="$router.back()" class="button is-link is-light mr-2">
+          Cancel
+        </button>
+        <button
+          @click="handleSaveClicked"
+          class="button is-link has-background-link"
+          :disabled="!noteContent"
+        >
+          Save Note
+        </button>
+      </template>
+    </AddEditNote>
+  </div>
+</template>
+<script setup>
+import AddEditNote from "@/components/note/AddEditNote.vue";
+import { useNoteStore } from "@/stores/noteStores";
+import { ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useWatchCharacters } from "@/use/useWatchCharacters";
+const noteContent = ref("");
+const addEditNoteRef = ref(null);
+const route = useRoute();
+const router = useRouter();
+const storeNote = useNoteStore();
+noteContent.value = storeNote.getNoteContent(route.params.id);
+const handleSaveClicked = () => {
+  storeNote.updateNote(route.params.id, noteContent.value);
+  router.push("/");
+};
+useWatchCharacters(noteContent, 10);
+</script>
